@@ -4,31 +4,23 @@ import { Button, View, TextInput } from 'react-native'
 // import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import firebase from 'firebase'
 
-// const auth = getAuth();
-export class Register extends Component {
+export class Login extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             email: '',
             password: '',
-            name: ''
         }
 
-        this.onSignUp = this.onSignUp.bind(this)
+        this.onSignIn = this.onSignIn.bind(this)
     }
 
-    onSignUp() {
-        const { email, password, name } = this.state;
-        firebase.auth().createUserWithEmailAndPassword(email, password)
+    onSignIn() {
+        const { email, password } = this.state;
+        firebase.auth().signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
-                // Signed in 
-                firebase.firestore().collection("users")
-                    .doc(firebase.auth().currentUser.uid)
-                    .set({
-                        name,
-                        email
-                    })
+                // Signed in
                 var user = userCredential.user;
                 console.log(userCredential)
                 // ...
@@ -37,17 +29,12 @@ export class Register extends Component {
                 var errorCode = error.code;
                 var errorMessage = error.message;
                 console.log(error)
-                // ..
             });
     }
 
     render() {
         return (
             <View>
-                <TextInput
-                    placeholder="name"
-                    onChangeText={(name) => this.setState({ name })}
-                />
                 <TextInput
                     placeholder="email"
                     onChangeText={(email) => this.setState({ email })}
@@ -59,14 +46,14 @@ export class Register extends Component {
                 />
 
                 <Button
-                    onPress={() => this.onSignUp()}
-                    title="Sign Up"
+                    onPress={() => this.onSignIn()}
+                    title="Sign in"
                 />
             </View>
         )
     }
 }
 
-export default Register
+export default Login
 
 
