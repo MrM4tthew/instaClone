@@ -2,14 +2,27 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 
+// React navigation imports
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import LandingScreen from './components/auth/Landing'
 import RegisterScreen from './components/auth/Register';
 import LoginScreen from './components/auth/Login'
+import MainScreen from './components/Main'
+import AddScreen from './components/main/Add'
+import SaveScreen from './components/main/Save'
 
+// Firebase import
 import firebase from 'firebase'
+
+// Redux state management imports
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import rootReducer from './redux/reducers'
+import thunk from 'redux-thunk'
+const store = createStore(rootReducer, applyMiddleware(thunk))
 
 const firebaseConfig = {
   apiKey: "AIzaSyBmonvD00Olsi9xG7oix6IBchTMYR5stxM",
@@ -27,6 +40,7 @@ if (firebase.apps.length === 0) {
 
 
 const Stack = createNativeStackNavigator();
+
 
 function handleLogout() {
   firebase.auth().signOut().then(() => {
@@ -82,10 +96,16 @@ export class App extends Component {
     }
 
     return (
-      <View style={{ flex: 1, justifyContent: "center" }}>
-        <Text>User is logged in!!!</Text>
-        <Button onPress={() => handleLogout()} title="Sign out" />
-      </View>
+      <Provider store={store}>
+        {/* <MainScreen /> */}
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Landing">
+            <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Add Post" component={AddScreen} navigation={this.props.navigation} />
+            <Stack.Screen name="Save" component={SaveScreen} navigation={this.props.navigation} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </Provider>
     )
   }
 }
